@@ -1,0 +1,14 @@
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\bin\Debug\net8.0\TareaFinal.exe
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\bin\Debug\net8.0\TareaFinal.deps.json
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\bin\Debug\net8.0\TareaFinal.runtimeconfig.json
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\bin\Debug\net8.0\TareaFinal.dll
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\bin\Debug\net8.0\TareaFinal.pdb
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\TareaFinal.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\TareaFinal.AssemblyInfoInputs.cache
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\TareaFinal.AssemblyInfo.cs
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\TareaFinal.csproj.CoreCompileInputs.cache
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\TareaFinal.dll
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\refint\TareaFinal.dll
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\TareaFinal.pdb
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\TareaFinal.genruntimeconfig.cache
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\ref\TareaFinal.dll
