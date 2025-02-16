@@ -20,12 +20,10 @@ class CarreraAutos
             Task.Run(() => CorrerAuto(auto, distanciaMeta, token), token).ContinueWith(t => new { Tarea = t, Auto = auto })
         ).ToArray();
 
-        // Esperar a que cualquier auto termine
         var primeraTarea = await Task.WhenAny(tareasAutos);
 
         Console.WriteLine($"\n {primeraTarea.Result.Auto} ha ganado la carrera. ");
 
-        // Cancelar otras tareas (las que no ganaron)
         cts.Cancel();
 
         // Mostrar finalización de las tareas
@@ -48,7 +46,7 @@ class CarreraAutos
 
         while (distancia < meta)
         {
-            await Task.Delay(rnd.Next(500, 1500), token); // Simula el tiempo de avance
+            await Task.Delay(rnd.Next(500, 1500), token);
 
             if (token.IsCancellationRequested)
             {
