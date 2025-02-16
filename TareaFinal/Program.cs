@@ -15,7 +15,6 @@ class CarreraAutos
         string[] autos = { "Auto 1", "Auto 2", "Auto 3", "Auto 4" };
         int distanciaMeta = 100;
 
-        // Iniciar la carrera con múltiples tareas en paralelo
         var tareasAutos = autos.Select(auto =>
             Task.Run(() => CorrerAuto(auto, distanciaMeta, token), token).ContinueWith(t => new { Tarea = t, Auto = auto })
         ).ToArray();
