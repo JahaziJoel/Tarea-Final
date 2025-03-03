@@ -12,3 +12,4 @@ C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\refint\Tar
 C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\TareaFinal.pdb
 C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\TareaFinal.genruntimeconfig.cache
 C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\ref\TareaFinal.dll
+C:\Users\Jahaziel\source\repos\TareaFinal\TareaFinal\obj\Debug\net8.0\TareaFinal.sourcelink.json

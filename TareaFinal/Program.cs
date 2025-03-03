@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-class CarreraAutos
+class Program
 {
     static async Task Main()
     {
-        Console.WriteLine("Simulador de carrera de autos!");
-
+        List<Task> pedidos = new List<Task>();
         CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken token = cts.Token;
 
+<<<<<<< HEAD
         string[] autos = { "Auto 1", "Auto 2", "Auto 3", "Auto 4" };
         int distanciaMeta = 100;
 
@@ -27,35 +26,55 @@ class CarreraAutos
 
         // Mostrar finalización de las tareas
         foreach (var tarea in tareasAutos)
+=======
+        for (int i = 1; i <= 3; i++)
+>>>>>>> 89963d1 (Primer commit)
         {
-            await tarea.ContinueWith(t =>
-            {
-                if (t.Result.Tarea.Status == TaskStatus.RanToCompletion)
-                    Console.WriteLine($" {t.Result.Auto} terminó la carrera.");
-                else if (t.Result.Tarea.Status == TaskStatus.Canceled)
-                    Console.WriteLine($" {t.Result.Auto} fue cancelado.");
-            });
+            int pedidoId = i;
+            pedidos.Add(ProcesarPedido(pedidoId, cts.Token));
         }
+
+        Task primerPedido = await Task.WhenAny(pedidos);
+        Console.WriteLine("Pedido completado más rápido.");
+
+        await Task.WhenAll(pedidos);
     }
 
-    static async Task CorrerAuto(string nombre, int meta, CancellationToken token)
+    static Task ProcesarPedido(int pedidoId, CancellationToken token)
     {
-        int distancia = 0;
-        Random rnd = new Random();
-
-        while (distancia < meta)
+        return Task.Factory.StartNew(() =>
         {
+<<<<<<< HEAD
             await Task.Delay(rnd.Next(500, 1500), token);
+=======
+            Console.WriteLine($"Pedido {pedidoId} iniciado.");
+>>>>>>> 89963d1 (Primer commit)
 
-            if (token.IsCancellationRequested)
+            var validacion = Task.Run(async () =>
             {
-                throw new TaskCanceledException();
-            }
+                Console.WriteLine($"Validando pedido {pedidoId}...");
+                await Task.Delay(1000);
+            }, token);
 
-            distancia += rnd.Next(10, 20);
-            Console.WriteLine($"{nombre} ha avanzado {distancia}/{meta}");
-        }
+            var empaque = validacion.ContinueWith(async t =>
+            {
+                Console.WriteLine($"Empacando pedido {pedidoId}...");
+                await Task.Delay(1500); 
+            }, TaskContinuationOptions.OnlyOnRanToCompletion).Unwrap();
 
-        Console.WriteLine($" {nombre} ha llegado a la meta.");
+            var envio = empaque.ContinueWith(async t =>
+            {
+                Console.WriteLine($"Enviando pedido {pedidoId}...");
+                await Task.Delay(2000);
+            }, TaskContinuationOptions.OnlyOnRanToCompletion).Unwrap();
+
+            envio.ContinueWith(t =>
+            {
+                Console.WriteLine($"Error en pedido {pedidoId}, cancelando...");
+                token.ThrowIfCancellationRequested();
+            }, TaskContinuationOptions.OnlyOnCanceled);
+
+            return envio;
+        }, token, TaskCreationOptions.AttachedToParent, TaskScheduler.Default).Unwrap();
     }
 }
