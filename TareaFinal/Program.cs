@@ -1,5 +1,8 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,74 +10,105 @@ class Program
 {
     static async Task Main()
     {
+        DateTime inicio = DateTime.Now;
         List<Task> pedidos = new List<Task>();
+        Dictionary<int, TimeSpan> tiemposPedidos = new Dictionary<int, TimeSpan>();
         CancellationTokenSource cts = new CancellationTokenSource();
 
-<<<<<<< HEAD
-        string[] autos = { "Auto 1", "Auto 2", "Auto 3", "Auto 4" };
-        int distanciaMeta = 100;
-
-        var tareasAutos = autos.Select(auto =>
-            Task.Run(() => CorrerAuto(auto, distanciaMeta, token), token).ContinueWith(t => new { Tarea = t, Auto = auto })
-        ).ToArray();
-
-        var primeraTarea = await Task.WhenAny(tareasAutos);
-
-        Console.WriteLine($"\n {primeraTarea.Result.Auto} ha ganado la carrera. ");
-
-        cts.Cancel();
-
-        // Mostrar finalización de las tareas
-        foreach (var tarea in tareasAutos)
-=======
-        for (int i = 1; i <= 3; i++)
->>>>>>> 89963d1 (Primer commit)
+        for (int i = 1; i <= 7; i++)
         {
             int pedidoId = i;
-            pedidos.Add(ProcesarPedido(pedidoId, cts.Token));
+            pedidos.Add(ProcesarPedido(pedidoId, cts.Token, tiemposPedidos));
         }
-
+        var monitoreo = MonitorearPedidos(pedidos, cts.Token);
         Task primerPedido = await Task.WhenAny(pedidos);
-        Console.WriteLine("Pedido completado más rápido.");
-
+        Console.WriteLine("Pedidos completados!");
         await Task.WhenAll(pedidos);
+        cts.Cancel(); 
+        DateTime fin = DateTime.Now;
+        TimeSpan tiempoTotal = fin - inicio;
+
+        MostrarEstadisticas(tiemposPedidos, tiempoTotal);
     }
 
-    static Task ProcesarPedido(int pedidoId, CancellationToken token)
+    static async Task ProcesarPedido(int pedidoId, CancellationToken token, Dictionary<int, TimeSpan> tiemposPedidos)
     {
-        return Task.Factory.StartNew(() =>
+        Stopwatch timer = Stopwatch.StartNew();
+        Console.WriteLine($"Pedido {pedidoId} iniciado.");
+
+        var validacion = Task.Run(async () =>
         {
-<<<<<<< HEAD
-            await Task.Delay(rnd.Next(500, 1500), token);
-=======
-            Console.WriteLine($"Pedido {pedidoId} iniciado.");
->>>>>>> 89963d1 (Primer commit)
+            Console.WriteLine($"Validando pedido {pedidoId}");
+            await Task.Delay(1000);
+            Console.WriteLine($"Pedido {pedidoId} validado.");
+        }, token);
 
-            var validacion = Task.Run(async () =>
+        await validacion;
+
+        var empaque = Task.Run(async () =>
+        {
+            Console.WriteLine($"Empacando pedido {pedidoId}.");
+            await Task.Delay(1500);
+            Console.WriteLine($"Pedido {pedidoId} empaquetado.");
+        }, token);
+
+        await empaque;
+
+        var ControlCalidad = Task.Run(async () =>
+        {
+            Console.WriteLine($"Pasando control calidad {pedidoId}.");
+            await Task.Delay(1000);
+            Console.WriteLine($"Pedido {pedidoId} aprobado.");
+        }, token);
+
+        await ControlCalidad;
+
+        var envio = Task.Run(async () =>
+        {
+            Console.WriteLine($"Enviando pedido {pedidoId}.");
+            await Task.Delay(2000);
+            Console.WriteLine($"Pedido {pedidoId} enviado.");
+        }, token);
+
+        await envio;
+        timer.Stop();
+        lock (tiemposPedidos)
+        {
+            tiemposPedidos[pedidoId] = timer.Elapsed;
+        }
+    }
+
+    static async Task MonitorearPedidos(List<Task> pedidos, CancellationToken token)
+    {
+        int pedidosPrevios = pedidos.Count;
+        while (!token.IsCancellationRequested)
+        {
+            int pedidosEnProceso = pedidos.Count(t => !t.IsCompleted);
+            if (pedidosEnProceso != pedidosPrevios)
             {
-                Console.WriteLine($"Validando pedido {pedidoId}...");
-                await Task.Delay(1000);
-            }, token);
+                Console.WriteLine($"Pedidos en proceso: {pedidosEnProceso}");
+                pedidosPrevios = pedidosEnProceso;
+            }
+            if (pedidosEnProceso == 0) break;
+            await Task.Delay(1000);
+        }
+    }
 
-            var empaque = validacion.ContinueWith(async t =>
-            {
-                Console.WriteLine($"Empacando pedido {pedidoId}...");
-                await Task.Delay(1500); 
-            }, TaskContinuationOptions.OnlyOnRanToCompletion).Unwrap();
+    static void MostrarEstadisticas(Dictionary<int, TimeSpan> tiemposPedidos, TimeSpan tiempoTotal)
+    {
+        Console.WriteLine("\nResumen de tiempos:");
+        if (tiemposPedidos.Count == 0)
+        {
+            Console.WriteLine("No hay datos de pedidos.");
+            return;
+        }
+        var pedidoMasRapido = tiemposPedidos.OrderBy(t => t.Value).First();
+        var pedidoMasLento = tiemposPedidos.OrderByDescending(t => t.Value).First();
+        double promedio = tiemposPedidos.Values.Average(t => t.TotalSeconds);
 
-            var envio = empaque.ContinueWith(async t =>
-            {
-                Console.WriteLine($"Enviando pedido {pedidoId}...");
-                await Task.Delay(2000);
-            }, TaskContinuationOptions.OnlyOnRanToCompletion).Unwrap();
-
-            envio.ContinueWith(t =>
-            {
-                Console.WriteLine($"Error en pedido {pedidoId}, cancelando...");
-                token.ThrowIfCancellationRequested();
-            }, TaskContinuationOptions.OnlyOnCanceled);
-
-            return envio;
-        }, token, TaskCreationOptions.AttachedToParent, TaskScheduler.Default).Unwrap();
+        Console.WriteLine($"El pedido más rápido: {pedidoMasRapido.Key} - {pedidoMasRapido.Value.TotalSeconds:F2} segundos");
+        Console.WriteLine($"El pedido más lento: {pedidoMasLento.Key} - {pedidoMasLento.Value.TotalSeconds:F2} segundos");
+        Console.WriteLine($"Tiempo promedio por pedido: {promedio:F2} segundos");
+        Console.WriteLine($"Tiempo total de procesamiento: {tiempoTotal.TotalSeconds:F2} segundos");
     }
 }
